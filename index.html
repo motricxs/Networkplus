@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head><style data-atlas-ui-policy="v3">
+[data-testid="accounts-profile-button"],
+[data-testid="profile-menu-button"],
+.accounts-profile-button,
+[aria-label="Open profile menu"],
+[data-testid*="history-item"][data-testid*="options"],
+[aria-label="Open conversation options"],
+[data-testid="conversation-options-button"],
+[data-sidebar-item="true"] .trailing button.__menu-item-trailing-btn,
+[data-sidebar-item="true"] .trailing-pair button.__menu-item-trailing-btn,
+[data-sidebar-item="true"] .trailing [data-trailing-button],
+[data-sidebar-item="true"] .trailing-pair [data-trailing-button],
+.trailing.highlight button.__menu-item-trailing-btn,
+.trailing.highlight [data-trailing-button],
+button[aria-label="Show project details"],
+button[aria-label*="project details" i],
+[data-testid*="delete" i],
+[aria-label*="delete" i],
+[role="menuitem"][data-testid*="delete" i],
+a[href*="/settings"],
+[data-testid="settings-button"],
+[data-atlas-ui-restricted="true"] {
+	display: none !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+button.__menu-item-trailing-btn[aria-label="New project"],
+button.__menu-item-trailing-btn[aria-label="Organize chats"],
+button[data-trailing-button][aria-label="New project"],
+button[data-trailing-button][aria-label="Organize chats"] {
+	display: inline-flex !important;
+	visibility: visible !important;
+	pointer-events: auto !important;
+}
+#atlas-logout-container {
+	position: fixed;
+	bottom: var(--atlas-sidebar-bottom, 0);
+	left: var(--atlas-sidebar-left, 0);
+	width: var(--atlas-sidebar-width, 0);
+	z-index: 2147483647;
+	padding: 8px 10px max(12px, env(safe-area-inset-bottom));
+	box-sizing: border-box;
+	pointer-events: none;
+}
+#atlas-logout-container[data-visible="false"] { display: none !important; }
+#atlas-logout-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	padding: 10px 14px;
+	border: 0;
+	border-radius: 12px;
+	background: linear-gradient(135deg, #fff, #f8f8f8);
+	color: #141313;
+	box-shadow: 0 4px 15px rgb(0 0 0 / 30%);
+	cursor: pointer;
+	font: 600 14px ui-sans-serif, system-ui, sans-serif;
+	pointer-events: auto;
+}
+#atlas-logout-button:hover { transform: translateY(-2px); }
+#atlas-logout-button svg { width: 18px; height: 18px; }
+</style><script data-atlas-ui-policy-runtime="v3">(()=>{if(window.__atlasUiPolicyV3)return;window.__atlasUiPolicyV3=true;const allowed=new Set(["new project","organize chats"]),selector='[role="menuitem"],[role="button"],button',restrict=root=>{const nodes=[];if(root&&root.nodeType===Node.ELEMENT_NODE&&root.matches&&root.matches(selector))nodes.push(root);if(root&&root.querySelectorAll)root.querySelectorAll(selector).forEach(node=>nodes.push(node));nodes.forEach(node=>{if(node.closest("#atlas-logout-container"))return;const label=(node.getAttribute("aria-label")||"").trim().toLowerCase();if(allowed.has(label))return;const text=(node.textContent||"").replace(/\s+/g," ").trim().toLowerCase();if(/\b(delete|remove)\b/.test(text)||text.includes("حذف"))node.dataset.atlasUiRestricted="true"})},sidebar=()=>{const selectors=['[data-testid="sidebar"]','[data-testid="left-sidebar"]','[data-testid="conversation-sidebar"]','[data-sidebar]','aside','nav[aria-label*="chat" i]','nav[aria-label*="navigation" i]'],mobile=matchMedia("(max-width: 768px)").matches,candidates=[];selectors.forEach((value,index)=>{try{document.querySelectorAll(value).forEach(element=>{if(!(element instanceof HTMLElement)||candidates.some(item=>item.element===element))return;const rect=element.getBoundingClientRect(),style=getComputedStyle(element),visible=rect.width>=48&&rect.width<=Math.min(440,innerWidth)&&rect.height>120&&rect.right>0&&rect.left<innerWidth&&rect.bottom>0&&rect.top<innerHeight&&style.display!=="none"&&style.visibility!=="hidden"&&parseFloat(style.opacity||"1")>0;if(!visible||(mobile&&rect.width<180))return;candidates.push({element,rect,score:(selectors.length-index)*100000-Math.max(0,rect.left)*100+Math.min(rect.height,innerHeight)+Math.min(rect.width,400)})})}catch{}});candidates.sort((a,b)=>b.score-a.score);return candidates[0]||null},ensureLogout=()=>{if(!document.body)return;let container=document.getElementById("atlas-logout-container");if(!container){container=document.createElement("div");container.id="atlas-logout-container";container.innerHTML='<button id="atlas-logout-button" type="button" aria-label="خروج از سامانه"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg><span>خروج</span></button>';container.querySelector("button").addEventListener("click",()=>{if(confirm("آیا مطمئن هستید که می‌خواهید خارج شوید؟"))location.assign("/logout")});document.body.appendChild(container)}if(container.parentElement!==document.body)document.body.appendChild(container);const host=sidebar();if(!host){container.dataset.visible="false";return}container.dataset.visible="true";container.style.setProperty("--atlas-sidebar-left",host.rect.left+"px");container.style.setProperty("--atlas-sidebar-width",Math.max(48,Math.min(host.rect.width,innerWidth))+"px");container.style.setProperty("--atlas-sidebar-bottom",Math.max(0,innerHeight-host.rect.bottom)+"px")},start=()=>{if(!document.body)return;restrict(document.body);ensureLogout();let queued=false;const pending=new Set,schedule=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{pending.forEach(restrict);pending.clear();ensureLogout();queued=false})};new MutationObserver(records=>{let changed=false;records.forEach(record=>{if(record.target instanceof Element&&record.target.closest("#atlas-logout-container"))return;changed=true;record.addedNodes.forEach(node=>{if(node.nodeType===Node.ELEMENT_NODE)pending.add(node)})});if(changed)schedule()}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class","style","hidden","aria-expanded","aria-hidden","data-state"]});addEventListener("resize",schedule,{passive:true});document.addEventListener("transitionend",schedule,true)};document.readyState==="loading"?document.addEventListener("DOMContentLoaded",start,{once:true}):start()})();</script><script data-atlas-runtime="v3">(()=>{const h=new Set(["chatgpt.com","chat.openai.com"]),r=u=>{try{const s=typeof u==="string"?u:u instanceof URL?u.href:null;if(!s)return u;const x=new URL(s,location.href);if(!h.has(x.hostname))return u;x.protocol=x.protocol==="wss:"||x.protocol==="ws:"?(location.protocol==="https:"?"wss:":"ws:"):location.protocol;x.host=location.host;return x.href}catch{return u}};if(window.fetch){const f=window.fetch;window.fetch=new Proxy(f,{apply(t,a,g){const i=g[0];if(i instanceof Request){const n=r(i.url);if(n!==i.url)g[0]=new Request(n,i)}else g[0]=r(i);return Reflect.apply(t,a,g)}})}if(window.XMLHttpRequest){const o=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u,...a){return o.call(this,m,r(u),...a)}}if(window.WebSocket){const W=window.WebSocket;window.WebSocket=new Proxy(W,{construct(t,a,n){a[0]=r(a[0]);return Reflect.construct(t,a,n)}})}if(window.EventSource){const E=window.EventSource;window.EventSource=new Proxy(E,{construct(t,a,n){a[0]=r(a[0]);return Reflect.construct(t,a,n)}})}if(navigator.sendBeacon){const b=navigator.sendBeacon.bind(navigator);navigator.sendBeacon=new Proxy(b,{apply(t,a,g){g[0]=r(g[0]);return Reflect.apply(t,a,g)}})}})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08111f">
+  <meta name="description" content="صفحه اصلی دوره آموزشی CompTIA Network+؛ یادگیری مبانی شبکه، انواع شبکه‌ها، تجهیزات، پروتکل‌ها و مفاهیم زیرساخت شبکه به زبان ساده و کاربردی.">
+  <title>آموزش Network+ | صفحه اصلی دوره</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body id="top">
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <main class="container">
+    <nav class="profile-socials" aria-label="شبکه‌های اجتماعی">
+      <a class="profile-socials__link profile-socials__link--instagram" href="https://www.instagram.com/matcub_official/" target="_blank" rel="noopener noreferrer">
+        <span class="profile-socials__icon" aria-hidden="true">◎</span><span>Instagram</span>
+      </a>
+      <a class="profile-socials__link profile-socials__link--telegram" href="https://t.me/matcub" target="_blank" rel="noopener noreferrer">
+        <span class="profile-socials__icon" aria-hidden="true">➤</span><span>Telegram</span>
+      </a>
+      <a class="profile-socials__link profile-socials__link--linkedin" href="https://www.linkedin.com/in/mohammadfallah1373/" target="_blank" rel="noopener noreferrer">
+        <span class="profile-socials__icon profile-socials__icon--linkedin" aria-hidden="true">in</span><span>LinkedIn</span>
+      </a>
+    </nav>
+
+    <header class="topbar">
+      <a class="topbar__brand" href="#top">MATCUB · Network+</a>
+      <nav class="topbar__links" aria-label="ناوبری صفحه">
+        <a href="#overview">معرفی دوره</a>
+        <a href="#topics">سرفصل‌ها</a>
+        <a href="#roadmap">مسیر یادگیری</a>
+        <a href="#lessons">جلسه‌ها</a>
+      </nav>
+    </header>
+
+    <header class="hero" id="overview">
+      <div class="hero-content">
+        <div class="hero-label">🌐 مسیر یادگیری شبکه از پایه تا آمادگی آزمون</div>
+        <h1>آموزش <span>CompTIA Network+</span></h1>
+        <p class="hero-subtitle">با مفاهیم بنیادین شبکه‌های کامپیوتری آشنا شوید؛ از انواع شبکه و توپولوژی‌ها تا تجهیزات، پروتکل‌ها، سرویس‌ها، امنیت و عیب‌یابی. یادگیری مرحله‌به‌مرحله با توضیح ساده، مثال‌های واقعی و تمرکز بر درک کاربردی مفاهیم.</p>
+        <div class="hero-badge">مبانی شبکه · مفاهیم فنی · مثال‌های عملی · آمادگی Network+</div>
+      </div>
+    </header>
+
+    <div class="lesson-meta" aria-label="اطلاعات دوره">
+      <span class="lesson-meta__item">🎓 <strong>دوره آموزشی Network+</strong></span>
+      <span class="lesson-meta__item">🎯 سطح: <strong>مقدماتی تا آمادگی آزمون</strong></span>
+      <span class="lesson-meta__item">📘 مرجع مطالعاتی: <strong>Network+ Study Guide</strong></span>
+      <span class="lesson-meta__item">🧩 رویکرد: <strong>مفهومی و کاربردی</strong></span>
+    </div>
+
+    <div class="badges" aria-label="موضوعات دوره">
+      <span class="badge gold">Networking Fundamentals</span>
+      <span class="badge green">Network Infrastructure</span>
+      <span class="badge blue">Protocols & Services</span>
+      <span class="badge purple">Network Security</span>
+      <span class="badge orange">Troubleshooting</span>
+    </div>
+
+    <section class="section blue" aria-label="درباره دوره">
+      <h2 class="section-title">🚀 به دنیای شبکه خوش آمدید</h2>
+      <p>شبکه‌های کامپیوتری زیرساخت ارتباط میان کاربران، سامانه‌ها، سرورها و سرویس‌های دیجیتال هستند. در این دوره، مفاهیم شبکه را از پایه و با زبانی روشن یاد می‌گیرید؛ به‌گونه‌ای که بتوانید اصطلاحات تخصصی را بشناسید، ارتباط میان اجزای شبکه را درک کنید و در موقعیت‌های واقعی تشخیص دهید هر فناوری یا تجهیز چه نقشی دارد.</p>
+      <p>هدف فقط حفظ کردن تعریف‌ها نیست. در هر مبحث تلاش می‌کنیم مفهوم را به یک سناریوی واقعی مانند شبکه یک شرکت، دانشگاه، بیمارستان یا مرکز داده پیوند دهیم تا آموخته‌ها در ذهن ماندگار شوند و برای پاسخ‌گویی به پرسش‌های نظری و عملی آماده باشید.</p>
+      <div class="buttons">
+        <a class="btn btn-blue" href="Lesson_01.html">شروع دوره · جلسه اول ←</a>
+        <a class="btn btn-blue" href="#lessons">مشاهده جلسه‌های آماده</a>
+      </div>
+    </section>
+
+    <section class="section gold" id="topics">
+      <h2 class="section-title">🧭 در این دوره چه چیزهایی یاد می‌گیریم؟</h2>
+      <p>محتوای دوره در چند محور اصلی پیش می‌رود. ترتیب دقیق مباحث با روند جلسات آموزشی هماهنگ خواهد بود و هر موضوع بر پایه مفاهیم قبلی ساخته می‌شود.</p>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <div class="concept-card__icon" aria-hidden="true">🌐</div>
+          <h3>مبانی و انواع شبکه</h3>
+          <p>مفهوم شبکه، کاربردها، گستره‌های PAN، LAN، CAN، MAN و WAN و الگوهای ارتباطی.</p>
+        </article>
+        <article class="concept-card">
+          <div class="concept-card__icon" aria-hidden="true">🧱</div>
+          <h3>زیرساخت و تجهیزات</h3>
+          <p>آشنایی با سوئیچ، روتر، اکسس‌پوینت، سرور، کابل‌ها و اجزای زیرساخت شبکه.</p>
+        </article>
+        <article class="concept-card">
+          <div class="concept-card__icon" aria-hidden="true">🔗</div>
+          <h3>پروتکل‌ها و سرویس‌ها</h3>
+          <p>درک نقش پروتکل‌ها، آدرس‌دهی، ارتباطات شبکه‌ای و سرویس‌های پرکاربرد.</p>
+        </article>
+        <article class="concept-card">
+          <div class="concept-card__icon" aria-hidden="true">🛡️</div>
+          <h3>امنیت شبکه</h3>
+          <p>شناخت تهدیدها، اصول کنترل دسترسی و راهکارهای پایه برای محافظت از شبکه.</p>
+        </article>
+        <article class="concept-card">
+          <div class="concept-card__icon" aria-hidden="true">🧰</div>
+          <h3>عیب‌یابی و سناریوهای عملی</h3>
+          <p>تحلیل مسئله، تشخیص علت اختلال و انتخاب گام مناسب برای رفع مشکل شبکه.</p>
+        </article>
+        <article class="concept-card">
+          <div class="concept-card__icon" aria-hidden="true">🗄️</div>
+          <h3>شبکه‌های سازمانی و مرکز داده</h3>
+          <p>آشنایی با معماری‌های سازمانی، اتصال شعب، منابع ذخیره‌سازی و سرویس‌های متمرکز.</p>
+        </article>
+      </div>
+      <div class="box note">
+        <p>این محورها نمای کلی موضوعات دوره هستند؛ هر قابلیت یا فناوری زمانی به‌عنوان مبحث قطعی آموزش داده می‌شود که در برنامه و محتوای جلسات قرار گرفته باشد.</p>
+      </div>
+    </section>
+
+    <section class="section purple" id="roadmap">
+      <h2 class="section-title">🗺️ روش و مسیر یادگیری</h2>
+      <p>برای یادگیری مؤثر شبکه، ابتدا باید تصویر کلی را بسازیم و سپس جزئیات فنی را به آن متصل کنیم. مسیر هر مبحث با تعریف و کاربرد آغاز می‌شود، با مثال و مقایسه ادامه پیدا می‌کند و در صورت نیاز به سناریوی عملی یا پرسش ارزیابی می‌رسد.</p>
+      <div class="path-flow">
+        <article class="path-flow__step">
+          <h3>۱. شناخت مفهوم</h3>
+          <p>تعریف اصطلاحات و درک اینکه هر فناوری یا جزء شبکه چه مسئله‌ای را حل می‌کند.</p>
+        </article>
+        <article class="path-flow__step">
+          <h3>۲. بررسی ساختار</h3>
+          <p>شناخت اجزا، ارتباط میان آن‌ها و جایگاه هرکدام در معماری شبکه.</p>
+        </article>
+        <article class="path-flow__step">
+          <h3>۳. مثال واقعی</h3>
+          <p>پیوند دادن مفهوم به محیط‌هایی مانند خانه، شرکت، دانشگاه و مرکز داده.</p>
+        </article>
+        <article class="path-flow__step">
+          <h3>۴. تثبیت و ارزیابی</h3>
+          <p>مرور نکات کلیدی و پاسخ به پرسش‌های مفهومی و کاربردی متناسب با هر جلسه.</p>
+        </article>
+      </div>
+      <div class="box important">
+        <p>پیشنهاد می‌شود جلسه‌ها را به ترتیب مطالعه کنید. بسیاری از مفاهیم شبکه به یکدیگر وابسته‌اند؛ برای مثال، درک درست شبکه‌های گسترده و اتصال شعب، بدون شناخت شبکه محلی و تجهیزات ارتباطی دشوار خواهد بود.</p>
+      </div>
+    </section>
+
+    <section class="section green" id="lessons">
+      <h2 class="section-title">📚 جلسه‌های دوره</h2>
+      <p>درسنامه‌های آماده‌شده از این بخش در دسترس هستند. با تکمیل هر جلسه، مسیر یادگیری به‌روزرسانی خواهد شد.</p>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <div class="concept-card__icon" aria-hidden="true">📘</div>
+          <h3>جلسه اول · مبانی شبکه</h3>
+          <p>شروع مسیر Network+ و آشنایی با مفاهیم اولیه و دسته‌بندی شبکه‌ها.</p>
+          <p><a class="inline-link" href="Lesson_01.html">مطالعه درسنامه جلسه اول ←</a></p>
+        </article>
+        <article class="concept-card">
+          <div class="concept-card__icon" aria-hidden="true">🌍</div>
+          <h3>جلسه دوم · انواع شبکه‌ها</h3>
+          <p>بررسی WAN متمرکز و توزیع‌شده، شبکه‌های PAN و CAN و شبکه ذخیره‌سازی SAN.</p>
+          <p><a class="inline-link" href="Lesson_02.html">مطالعه درسنامه جلسه دوم ←</a></p>
+        </article>
+      </div>
+      <div class="box success">
+        <p>برای ادامه یادگیری، از جلسه اول شروع کنید و سپس به‌ترتیب سراغ جلسه‌های بعدی بروید.</p>
+      </div>
+      <div class="buttons">
+        <a class="btn btn-blue" href="Lesson_01.html">ورود به جلسه اول ←</a>
+        <a class="btn btn-blue" href="Lesson_02.html">ورود به جلسه دوم ←</a>
+      </div>
+    </section>
+
+    <section class="section orange" id="study-tips">
+      <h2 class="section-title">💡 چند توصیه برای نتیجه بهتر</h2>
+      <ul class="checklist">
+        <li>اصطلاحات تخصصی انگلیسی را همراه با مفهوم فارسی آن‌ها یاد بگیرید؛ در منابع و آزمون‌ها معمولاً با نام انگلیسی روبه‌رو می‌شوید.</li>
+        <li>به‌جای حفظ کردن فهرست تجهیزات، نقش هر تجهیز و تفاوت آن با تجهیزات مشابه را درک کنید.</li>
+        <li>برای هر مفهوم، یک نمونه واقعی از شبکه خانه، محل کار یا یک سازمان در ذهن بسازید.</li>
+        <li>پس از مطالعه هر درسنامه، نکات کلیدی را مرور و پرسش‌های همان جلسه را حل کنید.</li>
+        <li>در مباحث عملی، مسیر ارتباط داده و نقش هر جزء را مرحله‌به‌مرحله دنبال کنید.</li>
+      </ul>
+    </section>
+
+    <nav class="lesson-navigation" aria-label="شروع مسیر یادگیری">
+      <a class="lesson-navigation__link lesson-navigation__link--next" href="Lesson_01.html">
+        <span><span class="lesson-navigation__label">شروع یادگیری</span><span class="lesson-navigation__title">رفتن به جلسه اول Network+</span></span>
+        <span class="lesson-navigation__arrow" aria-hidden="true">←</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>© MATCUB · مجموعه درسنامه‌های آموزشی Network+</p>
+      <p><a class="inline-link" href="#top">بازگشت به ابتدای صفحه</a></p>
+    </footer>
+  </main>
+</body>
+</html>
